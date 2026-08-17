@@ -15,29 +15,28 @@ Reduced Hallucinations — Answers are constrained to retrieved document context
 GPU-Accelerated Inference — Deployed with GPU support for low-latency response generation, even at scale.
 Containerized Deployment — Fully Dockerized for reproducible, portable, and scalable deployment across environments.
 Architecture
-                ┌─────────────────────┐
-                │   Document Corpus    │
+                 Document Corpus 
                 └──────────┬───────────┘
                            │  Chunking
                            ▼
-                ┌─────────────────────┐
-                │  Embedding Model     │
-                │ (Dense Vector Embed.)│
+               
+                  Embedding Model    
+                 (Dense Vector Embed)
                 └──────────┬───────────┘
                            │
                            ▼
-                ┌─────────────────────┐
-                │      ChromaDB        │
-                │   (Vector Store)     │
+                
+                      ChromaDB      
+                    (Vector Store)   
                 └──────────┬───────────┘
                            │  Top-k Retrieval
                            ▼
       User Query ───▶ Retriever ───▶ Context Chunks
                            │
                            ▼
-                ┌─────────────────────┐
-                │        LLM           │
-                │ (Answer Generation)  │
+                
+                          LLM           
+                  (Answer Generation)  
                 └──────────┬───────────┘
                            │
                            ▼
@@ -69,22 +68,48 @@ Usage
 Ingest Documents Place your source documents in the data/ directory. The pipeline will chunk and embed them automatically.
 bash
    python ingest.py --path ./data
-Start the Q&A Service
+Installation
+Prerequisites
+Docker & Docker Compose
+NVIDIA GPU + CUDA drivers (for GPU-accelerated inference)
+Python 3.10+
+Setup
 bash
-   docker-compose up
-Ask a Question
-bash
-   curl -X POST http://localhost:8000/query \
-     -H "Content-Type: application/json" \
-     -d '{"question": "What are the key findings in the Q3 report?"}'
+# Clone the repository
+git clone https://github.com/padmasree21/rag-document-qa.git
+cd rag-document-qa
 
-Response:
+# Build the Docker image
+docker build -t rag-doc-qa .
+
+# Run the container with GPU support
+docker run --gpus all -p 8000:8000 rag-doc-qa
+Usage
+
+1. Ingest Documents
+
+Place your source documents in the data/ directory. The pipeline will chunk and embed them automatically.
+
+bash
+python ingest.py --path ./data
+
+2. Start the Q&A Service
+
+bash
+docker-compose up
+
+3. Ask a Question
+
+bash
+curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d "{\"question\": \"What are the key findings in the Q3 report?\"}"
+
+Example response:
 
 json
-   {
-     "answer": "...",
-     "sources": ["report_q3.pdf - page 4", "report_q3.pdf - page 7"]
-   }
+{
+  "answer": "...",
+  "sources": ["report_q3.pdf - page 4", "report_q3.pdf - page 7"]
+}
 Pipeline Details
 Chunking — Documents are split into overlapping semantic chunks to preserve context across boundaries.
 Embedding — Each chunk is converted into a dense vector representation using a pretrained embedding model.
