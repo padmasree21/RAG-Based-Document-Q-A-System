@@ -110,6 +110,8 @@ json
   "answer": "...",
   "sources": ["report_q3.pdf - page 4", "report_q3.pdf - page 7"]
 }
+
+
 Pipeline Details
 Chunking — Documents are split into overlapping semantic chunks to preserve context across boundaries.
 Embedding — Each chunk is converted into a dense vector representation using a pretrained embedding model.
